@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Web Log Library</string>
+    <string name="local_service_started">Service Started</string>
+    <string name="local_service_stopped">Service Stoped</string>
+    <string name="local_service_label">Web Log Service</string>
+    <string name="local_service_disconnected">service disconnected</string>
+    <string name="local_service_connected">Service Connected</string>
+</resources>

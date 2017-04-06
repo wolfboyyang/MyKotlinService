@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.servicelibrary" >
+    <application>
+        <service android:name="com.example.servicelibrary.MyService" />
+        <service android:name="com.example.servicelibrary.MyRemoteService" android:process=":remote"/>
+    </application>
+</manifest>
