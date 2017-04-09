@@ -1,7 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.servicelibrary" >
+    package="com.example.servicelibrary">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.example.servicelibrary.MyRemoteService.START" />
+
+    <!-- uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" / -->
     <application>
-        <service android:name="com.example.servicelibrary.MyService" />
-        <service android:name="com.example.servicelibrary.MyRemoteService" android:process=":remote"/>
+        <service android:name=".MyService" />
+        <service
+            android:name=".MyRemoteService"
+            android:exported="true"
+            android:process=":remote">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="com.example.servicelibrary.MyRemoteService.BIND" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".MyBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+
+                <!-- action android:name="android.intent.action.BOOT_COMPLETED" / -->
+                <action android:name="com.example.servicelibrary.MyRemoteService.START" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
+
 </manifest>

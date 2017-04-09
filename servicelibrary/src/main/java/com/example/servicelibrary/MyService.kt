@@ -9,6 +9,8 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 
 
 /**
@@ -24,8 +26,8 @@ class MyService : Service() {
 
     var clientIntent: Intent? = null
 
-    class WebLogBinder : Binder() {
-        fun getService(): MyService = webLogService
+    inner class MyBinder : Binder() {
+        fun getService(): MyService = this@MyService
     }
 
     override fun onCreate() {
@@ -44,7 +46,7 @@ class MyService : Service() {
     override fun onBind(intent: Intent?): IBinder {
         Log.i(log_tag, "onBind")
         clientIntent = intent
-        return WebLogBinder()
+        return MyBinder()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -63,7 +65,7 @@ class MyService : Service() {
 
     // This is the object that receives interactions from clients.  See
     // RemoteService for a more complete example.
-    private val mBinder = WebLogBinder()
+    private val mBinder = MyBinder()
 
     /**
      * Show a notification while this service is running.
@@ -91,11 +93,14 @@ class MyService : Service() {
         mNM?.notify(NOTIFICATION, notification)
     }
 
+    fun onPing(address: String) {
+        launch(CommonPool) {
+            com.example.servicelibrary.ping(address)
+        }
+    }
+
     companion object {
         private val log_tag = "MyService"
-        private val webLogService: MyService by lazy {
-            MyService()
-        }
     }
 
 }

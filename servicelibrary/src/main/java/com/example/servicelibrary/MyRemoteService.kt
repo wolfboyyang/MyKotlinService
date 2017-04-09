@@ -8,6 +8,8 @@ import android.content.Intent
 import android.os.*
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.launch
 
 
 /**
@@ -43,6 +45,10 @@ class MyRemoteService : Service() {
                         }
                     }
                 }
+                MSG_PING -> {
+                    val bundle = msg.obj
+                    ping((bundle as Bundle)["address"] as String)
+                }
                 else -> super.handleMessage(msg)
             }
         }
@@ -58,20 +64,20 @@ class MyRemoteService : Service() {
     override fun onCreate() {
         Log.i(log_tag, "onCreate")
         mNM = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.i(log_tag, "Received start id  $startId : $intent")
-        return START_NOT_STICKY;
+        // Display a notification about us starting.  We put an icon in the status bar.
+        clientIntent = intent
+        showNotification()
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder {
         Log.i(log_tag, "onBind")
         clientIntent = intent
-        //return WebLogBinder()
+        showNotification()
         return mMessenger.binder
     }
 
@@ -109,10 +115,16 @@ class MyRemoteService : Service() {
                 .setContentTitle(getText(R.string.local_service_label))  // the label of the entry
                 .setContentText(text)  // the contents of the entry
                 .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
+                .setOngoing(true)
                 .build()
 
         // Send the notification.
-        mNM?.notify(NOTIFICATION, notification)
+        //mNM?.notify(NOTIFICATION, notification)
+        startForeground(101, notification)
+    }
+
+    fun onPing(address: String) {
+        com.example.servicelibrary.ping(address)
     }
 
     companion object {
@@ -137,6 +149,8 @@ class MyRemoteService : Service() {
          * any registered clients with the new value.
          */
         val MSG_SET_VALUE = 3
+
+        val MSG_PING = 4
     }
 
 }
